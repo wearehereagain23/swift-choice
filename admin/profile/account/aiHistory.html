@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI History Generator</title>
+
+    <!-- SweetAlert2 style -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --card: #fff;
+            --accent: #28a745;
+            --muted: #6b7280;
+            --radius: 10px;
+            --shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+            --gap: 14px;
+            --max-width: 980px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            padding: 28px
+        }
+
+        .container {
+            width: 100%;
+            max-width: var(--max-width);
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px;
+            box-sizing: border-box
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 20px
+        }
+
+        p.lead {
+            margin: 0 0 18px;
+            color: var(--muted);
+            font-size: 14px
+        }
+
+        form.grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--gap)
+        }
+
+        .col-3 {
+            grid-column: span 3
+        }
+
+        .col-4 {
+            grid-column: span 4
+        }
+
+        .col-6 {
+            grid-column: span 6
+        }
+
+        .col-12 {
+            grid-column: 1/-1
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #111827
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #e6e9ef;
+            font-size: 14px;
+            box-sizing: border-box
+        }
+
+        textarea {
+            min-height: 84px;
+            resize: vertical
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px
+        }
+
+        button.primary {
+            background: var(--accent);
+            color: #fff;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            box-shadow: 0 6px 14px rgba(40, 167, 69, .12)
+        }
+
+        small.helper {
+            display: block;
+            color: var(--muted);
+            margin-top: 6px
+        }
+
+        @media(max-width:880px) {
+
+            .col-3,
+            .col-4,
+            .col-6 {
+                grid-column: 1/-1
+            }
+        }
+
+        .bank-full {
+            grid-column: 1/-1
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" role="main">
+        <h1>AI History Generator</h1>
+        <p class="lead">Generate synthetic transaction histories and save. Use the fields below to
+            control output.</p>
+
+        <form id="historyForm" class="grid" autocomplete="off" novalidate>
+            <!-- Row 1 -->
+            <div class="col-6">
+                <label for="startDate">Start Date</label>
+                <input id="startDate" type="date" required>
+            </div>
+            <div class="col-6">
+                <label for="endDate">End Date</label>
+                <input id="endDate" type="date" required>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="col-3">
+                <label for="numHistory">Number of Histories</label>
+                <input id="numHistory" type="number" min="1" value="10" required>
+            </div>
+            <div class="col-3">
+                <label for="minAmount">Min Amount</label>
+                <input id="minAmount" type="number" step="0.01" min="0" placeholder="10.00" required>
+            </div>
+            <div class="col-3">
+                <label for="maxAmount">Max Amount</label>
+                <input id="maxAmount" type="number" step="0.01" min="0" placeholder="500.00" required>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="col-6">
+                <label for="nameOption">Name Source</label>
+                <select id="nameOption">
+                    <option value="auto" selected>Auto (random names)</option>
+                    <option value="manual">Manual (enter names)</option>
+                </select>
+            </div>
+
+            <div class="col-6 auto-field">
+                <label for="nationality">Nationality</label>
+                <select id="nationality">
+                    <option value="">--Select Country--</option>
+                    <option value="">--Select Country--</option>
+                    <option value="Afghanistan">Afghanistan</option>
+                    <option value="Albania">Albania</option>
+                    <option value="Algeria">Algeria</option>
+                    <option value="Andorra">Andorra</option>
+                    <option value="Angola">Angola</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Armenia">Armenia</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Austria">Austria</option>
+                    <option value="Azerbaijan">Azerbaijan</option>
+                    <option value="Bahamas">Bahamas</option>
+                    <option value="Bahrain">Bahrain</option>
+                    <option value="Bangladesh">Bangladesh</option>
+                    <option value="Barbados">Barbados</option>
+                    <option value="Belarus">Belarus</option>
+                    <option value="Belgium">Belgium</option>
+                    <option value="Belize">Belize</option>
+                    <option value="Benin">Benin</option>
+                    <option value="Bhutan">Bhutan</option>
+                    <option value="Bolivia">Bolivia</option>
+                    <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                    <option value="Botswana">Botswana</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Brunei">Brunei</option>
+                    <option value="Bulgaria">Bulgaria</option>
+                    <option value="Burkina Faso">Burkina Faso</option>
+                    <option value="Burundi">Burundi</option>
+                    <option value="Cambodia">Cambodia</option>
+                    <option value="Cameroon">Cameroon</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Cape Verde">Cape Verde</option>
+                    <option value="Central African Republic">Central African Republic</option>
+                    <option value="Chad">Chad</option>
+                    <option value="Chile">Chile</option>
+                    <option value="China">China</option>
+                    <option value="Colombia">Colombia</option>
+                    <option value="Comoros">Comoros</option>
+                    <option value="Congo">Congo</option>
+                    <option value="Costa Rica">Costa Rica</option>
+                    <option value="Croatia">Croatia</option>
+                    <option value="Cuba">Cuba</option>
+                    <option value="Cyprus">Cyprus</option>
+                    <option value="Czech Republic">Czech Republic</option>
+                    <option value="Denmark">Denmark</option>
+                    <option value="Djibouti">Djibouti</option>
+                    <option value="Dominica">Dominica</option>
+                    <option value="Dominican Republic">Dominican Republic</option>
+                    <option value="Ecuador">Ecuador</option>
+                    <option value="Egypt">Egypt</option>
+                    <option value="El Salvador">El Salvador</option>
+                    <option value="Equatorial Guinea">Equatorial Guinea</option>
+                    <option value="Eritrea">Eritrea</option>
+                    <option value="Estonia">Estonia</option>
+                    <option value="Eswatini">Eswatini</option>
+                    <option value="Ethiopia">Ethiopia</option>
+                    <option value="Fiji">Fiji</option>
+                    <option value="Finland">Finland</option>
+                    <option value="France">France</option>
+                    <option value="Gabon">Gabon</option>
+                    <option value="Gambia">Gambia</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Germany">Germany</option>
+                    <option value="Ghana">Ghana</option>
+                    <option value="Greece">Greece</option>
+                    <option value="Grenada">Grenada</option>
+                    <option value="Guatemala">Guatemala</option>
+                    <option value="Guinea">Guinea</option>
+                    <option value="Guinea-Bissau">Guinea-Bissau</option>
+                    <option value="Guyana">Guyana</option>
+                    <option value="Haiti">Haiti</option>
+                    <option value="Honduras">Honduras</option>
+                    <option value="Hungary">Hungary</option>
+                    <option value="Iceland">Iceland</option>
+                    <option value="India">India</option>
+                    <option value="Indonesia">Indonesia</option>
+                    <option value="Iran">Iran</option>
+                    <option value="Iraq">Iraq</option>
+                    <option value="Ireland">Ireland</option>
+                    <option value="Israel">Israel</option>
+                    <option value="Italy">Italy</option>
+                    <option value="Jamaica">Jamaica</option>
+                    <option value="Japan">Japan</option>
+                    <option value="Jordan">Jordan</option>
+                    <option value="Kazakhstan">Kazakhstan</option>
+                    <option value="Kenya">Kenya</option>
+                    <option value="Kiribati">Kiribati</option>
+                    <option value="Kuwait">Kuwait</option>
+                    <option value="Kyrgyzstan">Kyrgyzstan</option>
+                    <option value="Laos">Laos</option>
+                    <option value="Latvia">Latvia</option>
+                    <option value="Lebanon">Lebanon</option>
+                    <option value="Lesotho">Lesotho</option>
+                    <option value="Liberia">Liberia</option>
+                    <option value="Libya">Libya</option>
+                    <option value="Lithuania">Lithuania</option>
+                    <option value="Luxembourg">Luxembourg</option>
+                    <option value="Madagascar">Madagascar</option>
+                    <option value="Malawi">Malawi</option>
+                    <option value="Malaysia">Malaysia</option>
+                    <option value="Maldives">Maldives</option>
+                    <option value="Mali">Mali</option>
+                    <option value="Malta">Malta</option>
+                    <option value="Mauritania">Mauritania</option>
+                    <option value="Mauritius">Mauritius</option>
+                    <option value="Mexico">Mexico</option>
+                    <option value="Moldova">Moldova</option>
+                    <option value="Monaco">Monaco</option>
+                    <option value="Mongolia">Mongolia</option>
+                    <option value="Montenegro">Montenegro</option>
+                    <option value="Morocco">Morocco</option>
+                    <option value="Mozambique">Mozambique</option>
+                    <option value="Myanmar">Myanmar</option>
+                    <option value="Namibia">Namibia</option>
+                    <option value="Nauru">Nauru</option>
+                    <option value="Nepal">Nepal</option>
+                    <option value="Netherlands">Netherlands</option>
+                    <option value="New Zealand">New Zealand</option>
+                    <option value="Nicaragua">Nicaragua</option>
+                    <option value="Niger">Niger</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="North Korea">North Korea</option>
+                    <option value="North Macedonia">North Macedonia</option>
+                    <option value="Norway">Norway</option>
+                    <option value="Oman">Oman</option>
+                    <option value="Pakistan">Pakistan</option>
+                    <option value="Palau">Palau</option>
+                    <option value="Palestine">Palestine</option>
+                    <option value="Panama">Panama</option>
+                    <option value="Papua New Guinea">Papua New Guinea</option>
+                    <option value="Paraguay">Paraguay</option>
+                    <option value="Peru">Peru</option>
+                    <option value="Philippines">Philippines</option>
+                    <option value="Poland">Poland</option>
+                    <option value="Portugal">Portugal</option>
+                    <option value="Qatar">Qatar</option>
+                    <option value="Romania">Romania</option>
+                    <option value="Russia">Russia</option>
+                    <option value="Rwanda">Rwanda</option>
+                    <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+                    <option value="Saint Lucia">Saint Lucia</option>
+                    <option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
+                    <option value="Samoa">Samoa</option>
+                    <option value="San Marino">San Marino</option>
+                    <option value="Saudi Arabia">Saudi Arabia</option>
+                    <option value="Senegal">Senegal</option>
+                    <option value="Serbia">Serbia</option>
+                    <option value="Seychelles">Seychelles</option>
+                    <option value="Sierra Leone">Sierra Leone</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Slovakia">Slovakia</option>
+                    <option value="Slovenia">Slovenia</option>
+                    <option value="Solomon Islands">Solomon Islands</option>
+                    <option value="Somalia">Somalia</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="South Korea">South Korea</option>
+                    <option value="South Sudan">South Sudan</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Sri Lanka">Sri Lanka</option>
+                    <option value="Sudan">Sudan</option>
+                    <option value="Suriname">Suriname</option>
+                    <option value="Sweden">Sweden</option>
+                    <option value="Switzerland">Switzerland</option>
+                    <option value="Syria">Syria</option>
+                    <option value="Taiwan">Taiwan</option>
+                    <option value="Tajikistan">Tajikistan</option>
+                    <option value="Tanzania">Tanzania</option>
+                    <option value="Thailand">Thailand</option>
+                    <option value="Togo">Togo</option>
+                    <option value="Tonga">Tonga</option>
+                    <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+                    <option value="Tunisia">Tunisia</option>
+                    <option value="Turkey">Turkey</option>
+                    <option value="Turkmenistan">Turkmenistan</option>
+                    <option value="Tuvalu">Tuvalu</option>
+                    <option value="Uganda">Uganda</option>
+                    <option value="Ukraine">Ukraine</option>
+                    <option value="United Arab Emirates">United Arab Emirates</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="United States">United States</option>
+                    <option value="Uruguay">Uruguay</option>
+                    <option value="Uzbekistan">Uzbekistan</option>
+                    <option value="Vanuatu">Vanuatu</option>
+                    <option value="Vatican City">Vatican City</option>
+                    <option value="Venezuela">Venezuela</option>
+                    <option value="Vietnam">Vietnam</option>
+                    <option value="Yemen">Yemen</option>
+                    <option value="Zambia">Zambia</option>
+                    <option value="Zimbabwe">Zimbabwe</option>
+                    <!-- add or expand list as needed -->
+                </select>
+            </div>
+
+            <div class="col-6 auto-field">
+                <label for="gender">Gender (for auto names)</label>
+                <select id="gender">
+                    <option value="both">Both</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+
+            <div class="col-6 auto-field">
+                <label for="numBeneficiary">Number of Beneficiaries (auto)</label>
+                <input id="numBeneficiary" type="number" min="1" placeholder="Defaults to # of histories">
+            </div>
+
+            <div class="col-12 manual-field" style="display:none;">
+                <label for="manualName">Manual Names (comma separated)</label>
+                <input id="manualName" type="text" placeholder="John Doe, Jane Smith">
+                <small class="helper">Separate names with commas</small>
+            </div>
+
+            <div class="col-12">
+                <label>Transaction Types</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" value="Account" checked> Account</label>
+                    <label><input type="checkbox" value="Online"> Online</label>
+                    <label><input type="checkbox" value="Loan"> Loan</label>
+                </div>
+            </div>
+
+            <div class="bank-full">
+                <label for="bankName2">Bank Name(s)</label>
+                <input id="bankName2" type="text" placeholder="First Bank, GTBank" required>
+                <small class="helper">Separate multiple banks with commas</small>
+            </div>
+
+            <div class="col-4">
+                <label style="visibility:hidden">spacer</label>
+                <button type="submit" class="primary">Generate & Save</button>
+            </div>
+        </form>
+
+
+    </div>
+    <script src="../../../config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script type="module">
+        // imports (Firebase v9 modular)
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import {
+            getFirestore, collection, doc, writeBatch,
+            serverTimestamp, Timestamp
+        } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+        // ensure CONFIG.FIREBASE exists
+        if (typeof CONFIG === 'undefined' || !CONFIG.FIREBASE) {
+            console.warn("CONFIG.FIREBASE is not defined. Make sure your config.js is loaded before this file.");
+        }
+
+        const firebaseApp = (typeof CONFIG !== 'undefined' && CONFIG.FIREBASE) ? initializeApp(CONFIG.FIREBASE) : null;
+        const db = firebaseApp ? getFirestore(firebaseApp) : null;
+
+        if (localStorage.getItem('admin') === 'no') {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Upgrade Required',
+                text: 'Upgrade required to use this feature'
+            }).then(() => {
+                history.back(); // or history.go(-1);
+            });
+        }
+
+
+        // helpers
+        function chunkArray(arr, size) { const out = []; for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size)); return out; }
+        const randPick = arr => arr[Math.floor(Math.random() * arr.length)];
+        const randRef = len => Array.from({ length: len }, () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"[Math.floor(Math.random() * 36)]).join('');
+        const randCurrency = (min, max) => parseFloat((Math.random() * (max - min) + min).toFixed(2));
+        const randomDateBetween = (s, e) => { const lo = Math.min(s.getTime(), e.getTime()); const hi = Math.max(s.getTime(), e.getTime()); return new Date(lo + Math.random() * (hi - lo)); }
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        const natCodeMap = {
+            "United States": "US", "United Kingdom": "GB", "Canada": "CA", "Australia": "AU",
+            "France": "FR", "Germany": "DE", "India": "IN", "Brazil": "BR", "Nigeria": "NG"
+        };
+
+        // user id from URL param 'i'
+        const urlParams = new URLSearchParams(window.location.search);
+        const USERID = urlParams.get('i') || null;
+
+        // DOM refs
+        const form = document.getElementById('historyForm');
+        const nameOption = document.getElementById('nameOption');
+        const autoFields = document.querySelectorAll('.auto-field');
+        const manualField = document.querySelector('.manual-field');
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        function updateNameModeUI() {
+            if (nameOption.value === 'manual') {
+                autoFields.forEach(el => el.style.display = 'none');
+                manualField.style.display = 'block';
+            } else {
+                autoFields.forEach(el => el.style.display = 'block');
+                manualField.style.display = 'none';
+            }
+        }
+        nameOption.addEventListener('change', updateNameModeUI);
+        updateNameModeUI();
+
+        // fetch names
+        async function fetchAutoNames(nationalityLabel, gender, count) {
+            const nat = natCodeMap[nationalityLabel] || "";
+            let url = `https://randomuser.me/api/?results=${encodeURIComponent(count)}`;
+            if (nat) url += `&nat=${encodeURIComponent(nat)}`;
+            if (gender && gender !== 'both') url += `&gender=${encodeURIComponent(gender)}`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                return (data.results || []).map(u => `${u.name.first} ${u.name.last}`);
+            } catch (err) {
+                console.warn('randomuser fetch failed', err);
+                return ["John Doe", "Jane Smith", "Alex Taylor"];
+            }
+        }
+
+        // Save histories in batches
+        async function saveHistories(histories, userId) {
+            if (!db) {
+                await Swal.fire({ icon: 'error', title: 'Missing Firebase', text: 'Firestore is not initialized (CONFIG.FIREBASE not found).' });
+                return;
+            }
+            if (!userId) {
+                await Swal.fire({ icon: 'error', title: 'Missing USERID', text: 'No user id provided in URL ?i=' });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Generating...',
+                html: `<div style="width:100%;background:#e6eef0;border-radius:10px;overflow:hidden;">
+                 <div id="progressBar" style="width:0%;height:18px;background:${'#28a745'};color:white;text-align:center;font-weight:600;line-height:18px">0%</div>
+               </div>
+               <p id="progressText" style="margin-top:10px;color:#d1d5db">Preparing data...</p>`,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                background: '#0C290F',
+                color: '#fff'
+            });
+
+            submitBtn.disabled = true;
+            const batches = chunkArray(histories, 500);
+            let completed = 0;
+
+            for (const batchItems of batches) {
+                const progressTextEl = document.getElementById('progressText');
+                const progressBarEl = document.getElementById('progressBar');
+                if (progressTextEl) progressTextEl.textContent = 'Analyzing data...';
+                await sleep(450);
+
+                const batch = writeBatch(db);
+                batchItems.forEach(item => {
+                    const ref = doc(collection(db, 'history', userId, 'history'), item.id);
+                    batch.set(ref, item);
+                });
+
+                if (progressTextEl) progressTextEl.textContent = 'Composing history...';
+                await sleep(600);
+
+                try {
+                    await batch.commit();
+                } catch (err) {
+                    console.error('Batch commit error:', err);
+                    await Swal.fire({ icon: 'error', title: 'Save failed', text: err.message || 'Failed to save batch.' });
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                completed++;
+                const percent = Math.round((completed / batches.length) * 100);
+                if (progressBarEl) {
+                    progressBarEl.style.transition = 'width 600ms ease';
+                    progressBarEl.style.width = percent + '%';
+                    progressBarEl.textContent = percent + '%';
+                }
+                if (progressTextEl) progressTextEl.textContent = percent < 50 ? 'Analyzing data...' : (percent < 100 ? 'Composing history...' : 'Finalizing...');
+                await sleep(400);
+            }
+
+            submitBtn.disabled = false;
+            await Swal.fire({ icon: 'success', title: 'Done', text: `${histories.length} histories saved.` });
+        }
+
+        // form submit
+        form.addEventListener('submit', async (ev) => {
+            ev.preventDefault();
+
+            const startVal = document.getElementById('startDate').value;
+            const endVal = document.getElementById('endDate').value;
+            const start = startVal ? new Date(startVal) : null;
+            const end = endVal ? new Date(endVal) : null;
+            if (!start || !end || isNaN(start.getTime()) || isNaN(end.getTime())) {
+                return Swal.fire({ icon: 'error', title: 'Invalid dates', text: 'Please provide valid start and end dates.' });
+            }
+
+            const numHistory = parseInt(document.getElementById('numHistory').value, 10);
+            if (!numHistory || numHistory < 1) return Swal.fire({ icon: 'error', title: 'Invalid number', text: 'Number of histories must be at least 1.' });
+
+            const minAmount = parseFloat(document.getElementById('minAmount').value);
+            const maxAmount = parseFloat(document.getElementById('maxAmount').value);
+            if (isNaN(minAmount) || isNaN(maxAmount) || minAmount > maxAmount) {
+                return Swal.fire({ icon: 'error', title: 'Invalid amounts', text: 'Enter valid min and max amounts (min ≤ max).' });
+            }
+
+            const bankNames = document.getElementById('bankName2').value.split(',').map(s => s.trim()).filter(Boolean);
+            if (!bankNames.length) return Swal.fire({ icon: 'error', title: 'Missing banks', text: 'Please provide at least one bank name.' });
+
+            const types = [...document.querySelectorAll('.checkbox-group input:checked')].map(i => i.value);
+            if (!types.length) return Swal.fire({ icon: 'error', title: 'Missing types', text: 'Select at least one transaction type.' });
+
+            // names
+            let namesPool = [];
+            if (nameOption.value === 'manual') {
+                const manual = document.getElementById('manualName').value.split(',').map(s => s.trim()).filter(Boolean);
+                if (!manual.length) return Swal.fire({ icon: 'error', title: 'Missing names', text: 'Please enter at least one manual name.' });
+                namesPool = manual;
+            } else {
+                const nationality = document.getElementById('nationality').value;
+                const gender = document.getElementById('gender').value;
+                const numBeneficiary = parseInt(document.getElementById('numBeneficiary').value, 10) || numHistory;
+                namesPool = await fetchAutoNames(nationality, gender, numBeneficiary);
+                if (!namesPool.length) return Swal.fire({ icon: 'error', title: 'Name generation failed', text: 'Could not create names. Try manual mode.' });
+            }
+
+            // build histories
+            const histories = [];
+            for (let i = 0; i < numHistory; i++) {
+                histories.push({
+                    id: randRef(4),
+                    amount: randCurrency(minAmount, maxAmount),
+                    date: Timestamp.fromDate(randomDateBetween(start, end)),   // ✅ Firestore Timestamp
+                    createdAt: serverTimestamp(),                              // ✅ Server time
+                    name: randPick(namesPool),
+                    bankName: randPick(bankNames),
+                    transactionType: randPick(["Credit", "Debit"]),
+                    withdrawFrom: types.length === 1 ? types[0] : randPick(types),
+                    ref: randRef(10),
+                    uuid: USERID,
+                    description: '---',
+                    status: 'Completed'
+                });
+            }
+
+            // sort before writing (for consistency in display)
+            histories.sort((a, b) => a.date.toMillis() - b.date.toMillis());
+
+            await saveHistories(histories, USERID);
+
+            form.reset();
+            updateNameModeUI();
+        });
+    </script>
+
+</body>
+
+</html>

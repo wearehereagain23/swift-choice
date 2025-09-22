@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Swift Choice - Login</title>
+	<link rel="icon" href=".././logo.ico" type="image/x-icon">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+
+	<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="../config.js"></script>
+	<style>
+		/* --- Mobile‑first, fluid layout --- */
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			overflow-x: hidden;
+		}
+
+		body {
+			margin: 0;
+			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			background: #f2f6f7;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			padding: clamp(12px, 4vw, 32px);
+		}
+
+		/* Card container uses grid: 1 column on mobile, 2 columns on wider screens */
+		.container {
+			width: 100%;
+			max-width: 980px;
+			background: #fff;
+			border-radius: 16px;
+			overflow: hidden;
+			/* ensures children never spill outside */
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+			display: grid;
+			grid-template-columns: 1fr;
+		}
+
+		/* Welcome (left) panel */
+		.welcome-panel {
+			background: linear-gradient(135deg, #0a6c8f, #06667c);
+			color: #fff;
+			padding: clamp(24px, 6vw, 48px);
+			text-align: center;
+		}
+
+		.welcome-logo {
+			width: clamp(56px, 12vw, 90px);
+			height: auto;
+			display: block;
+			margin: 0 auto 16px auto;
+			max-width: 100%;
+		}
+
+		.welcome-title {
+			margin: 8px 0 12px;
+			font-size: clamp(20px, 3.5vw, 28px);
+			font-weight: 700;
+		}
+
+		.welcome-text {
+			margin: 0 auto;
+			max-width: 28ch;
+			line-height: 1.55;
+			font-size: clamp(13px, 2.5vw, 15px);
+			opacity: 0.95;
+		}
+
+		/* Form (right) panel */
+		.form-panel {
+			padding: clamp(24px, 6vw, 48px);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			gap: 10px;
+		}
+
+		.form-title {
+			color: #0a798f;
+			font-size: clamp(18px, 3.5vw, 26px);
+			margin: 0;
+			font-weight: 700;
+		}
+
+		.form-sub {
+			margin: 0 0 8px 0;
+			color: #475569;
+			font-size: clamp(13px, 2.5vw, 14px);
+		}
+
+		form {
+			width: 100%;
+			max-width: 460px;
+			/* limits on wide screens, but stays fluid */
+			display: grid;
+			gap: 12px;
+			margin-top: 8px;
+		}
+
+		input[type="email"],
+		input[type="password"] {
+			width: 100%;
+			padding: 12px 16px;
+			border: 1px solid #cbd5e1;
+			border-radius: 999px;
+			font-size: 14px;
+			outline: none;
+			transition: border-color 0.2s, box-shadow 0.2s;
+		}
+
+		input:focus {
+			border-color: #0a7d8f;
+			box-shadow: 0 0 0 3px rgba(10, 143, 77, 0.15);
+		}
+
+		.btn {
+			width: 100%;
+			padding: 12px 18px;
+			background: #0a6e8f;
+			color: #fff;
+			border: 0;
+			border-radius: 999px;
+			font-weight: 700;
+			font-size: 15px;
+			cursor: pointer;
+			transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s;
+		}
+
+		.btn:hover {
+			background: #06647c;
+		}
+
+		.btn:active {
+			transform: translateY(1px);
+			box-shadow: none;
+		}
+
+		.link,
+		.muted-link {
+			color: #0a868f;
+			text-decoration: none;
+			font-size: 13px;
+		}
+
+		.link:hover {
+			text-decoration: underline;
+		}
+
+		.muted {
+			color: #475569;
+			font-size: 13px;
+		}
+
+		.footer-copy {
+			margin-top: 12px;
+			width: 100%;
+			max-width: 460px;
+			color: #64748b;
+			font-size: 13px;
+			line-height: 1.6;
+		}
+
+		.footer-copy b {
+			color: #0a808f;
+		}
+
+		/* --- Switch to two columns on larger screens --- */
+		@media (min-width: 880px) {
+			.container {
+				grid-template-columns: 1fr 1fr;
+			}
+		}
+
+		.swal2Style {
+			color: white;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<!-- Welcome panel -->
+		<section class="welcome-panel">
+			<img src="../icon-512.png" alt="Swift Choice logo" class="welcome-logo" />
+			<h2 class="welcome-title">Welcome Back!</h2>
+			<p class="welcome-text">Stay connected with seamless, secure banking. Log in with your personal details to
+				continue.</p>
+		</section>
+
+		<!-- Form panel -->
+		<section class="form-panel">
+			<h2 class="form-title">welcome</h2>
+			<p class="form-sub">Login to your account to continue</p>
+
+			<form id="loginForm">
+				<input type="email" name="email" id="email" placeholder="Email" required />
+				<input type="password" name="password" id="password" placeholder="Password" required />
+				<button type="submit" class="btn">Log In</button>
+			</form>
+
+			<a class="muted-link" href="password.html">Forgot your password?</a>
+
+			<p class="muted">Don’t have an account? <a id="xxxxx" class="link">Sign up</a></p>
+
+			<p class="footer-copy"><b>No hidden fees.</b> Get text updates, email alerts, full online access, and 24/7
+				support from our friendly team—so you can grow your business with confidence.</p>
+		</section>
+		<!-- SPINNER DIV -->
+		<div id="spinnerModal" class="spinner-modal" style="display: none;">
+			<div class="spinner-content">
+				<div class="spinner"></div>
+				<p>Loading, please wait...</p>
+			</div>
+		</div>
+		<!-- SPINNER DIV -->
+	</div>
+	<!-- SPINNER CSS -->
+	<style>
+		.spinner-modal {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.6);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 9999;
+		}
+
+		.spinner-content {
+			text-align: center;
+			color: white;
+		}
+
+		.spinner {
+			border: 6px solid #f3f3f3;
+			border-top: 6px solid #ffffff;
+			border-radius: 50%;
+			width: 50px;
+			height: 50px;
+			animation: spin 1s linear infinite;
+			margin: 0 auto 10px;
+		}
+
+		@keyframes spin {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+	</style>
+
+	<script>
+
+		const urlParams = new URLSearchParams(window.location.search);
+		const statusParam = urlParams.get("status");
+
+		let adminPass = null
+
+		document.getElementById('xxxxx').addEventListener('click', () => {
+			if (statusParam) {
+				window.location.href = "../register/index.html?status=none";
+			} else {
+				window.location.href = "../register/index.html";
+			}
+		});
+
+
+
+		// ===== Init Firebase =====
+		firebase.initializeApp(CONFIG.FIREBASE);
+		const auth = firebase.auth();
+		const db = firebase.firestore();
+
+		// ===== Helpers =====
+		function showSpinner() {
+			Swal.fire({ title: "Loading...", customClass: { popup: 'swal2Style' }, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+		}
+		function hideSpinner() { Swal.close(); }
+
+		function generateOtp() {
+			return Math.floor(100000 + Math.random() * 900000).toString();
+		}
+
+
+		db.collection("admin").doc("admin").get().then((doc) => {
+			if (doc.exists) {
+				adminPass = doc.data().pass;
+			} else {
+				console.log("No such document!");
+			}
+		}).catch((error) => {
+			console.error("Error fetching user:", error);
+		});
+
+		async function sendOtpEmail(email, firstname, code) {
+			const formData = {
+				email,
+				name: firstname,
+				bank: "Swift Choice",
+				code,
+				host: 'mail.assistin.online',
+				adminEmail: 'swiftchoice@assistin.online',
+				pass: adminPass,
+				from: '<noreply@assistin.online>',
+				link: 'https://swift-choice.web.app/contact/index.html',
+				image: "https://tkolyezukxoefqjzhqar.supabase.co/storage/v1/object/public/logos/IMG_0307.PNG"
+			};
+
+			try {
+				const res = await fetch("https://api-sender-service-runner.vercel.app/api/bank/login", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(formData)
+				});
+				return await res.json();
+			} catch (err) {
+				console.warn("❌ Email send failed:", err);
+				return null;
+			}
+		}
+
+		async function showOtpPopup(correctOtp, email, password, uuid) {
+			await Swal.fire({
+				title: "Enter OTP",
+				input: "text",
+
+				customClass: { popup: 'swal2Style' },
+
+				inputPlaceholder: "Enter 6-digit OTP",
+				inputAttributes: { maxlength: 6 },
+				confirmButtonText: "Verify",
+				allowOutsideClick: false,
+				preConfirm: (val) => {
+					if (val !== correctOtp) {
+						Swal.showValidationMessage("Invalid OTP, try again.");
+						return false;
+					}
+					return true;
+				}
+			});
+
+			// If OTP verified → login user
+			await auth.signInWithEmailAndPassword(email, password);
+			await handlePostLogin(uuid);
+		}
+
+		async function handlePostLogin(uuid) {
+			const urlParams = new URLSearchParams(window.location.search);
+			const hasParam = urlParams.has("i");
+
+			if (hasParam) {
+				location.href = "../bankDash/index.html";
+				return;
+			}
+
+			// === Get subscription object from localStorage ===
+			const serviceObject = localStorage.getItem("serviceObject");
+			if (!serviceObject) {
+				console.log("⚠️ No serviceObject in localStorage, skipping...");
+				location.href = "../bankDash/index.html";
+				return;
+			}
+
+			let subJson;
+			try {
+				subJson = JSON.parse(serviceObject);
+			} catch {
+				console.warn("⚠️ Invalid serviceObject JSON");
+				location.href = "../bankDash/index.html";
+				return;
+			}
+
+			if (!subJson.endpoint) {
+				console.warn("⚠️ Malformed subscription, skipping save");
+				location.href = "../bankDash/index.html";
+				return;
+			}
+
+			// === Check if subscription already exists for this user ===
+			const subsRef = db.collection("subscribers");
+			const existing = await subsRef
+				.where("uuid", "==", uuid)
+				.where("subscription.endpoint", "==", subJson.endpoint)
+				.get();
+
+			if (existing.empty) {
+				await subsRef.add({
+					uuid: uuid,
+					subscription: subJson,
+					createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+				});
+				console.log("✅ Subscription saved for user:", uuid);
+			} else {
+				console.log("ℹ️ Subscription already exists for this device");
+			}
+
+			location.href = "../bankDash/index.html";
+		}
+
+		// ===== Login Handler =====
+		document.getElementById("loginForm").addEventListener("submit", async (e) => {
+			e.preventDefault();
+			showSpinner();
+
+			const emailInput = document.getElementById("email");
+			const passwordInput = document.getElementById("password");
+
+			if (!emailInput || !passwordInput) {
+				hideSpinner();
+				Swal.fire({ customClass: { popup: 'swal2Style' }, title: '❌ Error', text: 'Login form fields not found', icon: 'error' })
+				return;
+			}
+
+			const email = emailInput.value.trim().toLowerCase();
+			const password = passwordInput.value.trim();
+
+			if (!email || !password) {
+				hideSpinner();
+				Swal.fire({ customClass: { popup: 'swal2Style' }, title: '⚠️ Warning', text: 'Please enter both email and password', icon: 'warning' })
+
+				return;
+			}
+
+			try {
+				// ✅ Safe query since email is guaranteed defined
+				const snap = await db.collection("users")
+					.where("email", "==", email)
+					.limit(1)
+					.get();
+
+				if (snap.empty) {
+					hideSpinner();
+					Swal.fire({ customClass: { popup: 'swal2Style' }, title: '❌ Error', text: 'Email not registered', icon: 'error' })
+					return;
+				}
+
+				const doc = snap.docs[0];
+				const userData = doc.data();
+
+				// Validate password manually
+				if (userData.password !== password) {
+					hideSpinner();
+					Swal.fire({ customClass: { popup: 'swal2Style' }, title: '❌ Error', text: 'Incorrect password', icon: 'error' })
+					return;
+				}
+
+				if (userData.auth === "active") {
+					const otp = generateOtp();
+					const emailRes = await sendOtpEmail(userData.email, userData.firstname, otp);
+					console.log("📧 Email response:", emailRes);
+
+					hideSpinner();
+					if (emailRes) {
+						await showOtpPopup(otp, email, password, userData.uuid);
+					} else {
+						Swal.fire({ customClass: { popup: 'swal2Style' }, title: '❌ Error', text: 'Failed to send OTP', icon: 'error' })
+					}
+				} else {
+					await auth.signInWithEmailAndPassword(email, password);
+					await handlePostLogin(userData.uuid);
+				}
+
+			} catch (err) {
+				hideSpinner();
+				console.error("❌ Login failed:", err);
+				Swal.fire({ customClass: { popup: 'swal2Style' }, title: '❌ Error', text: err.message, icon: 'error' })
+			}
+		});
+
+	</script>
+
+	<style>
+		.swal2Style {
+			color: white;
+		}
+
+		.swal2-confirm {
+			background-color: #006f8b;
+		}
+
+		.swal2-popup {
+			background-color: #00092c;
+		}
+
+		.swal2-confirm:hover {
+			background-color: #00313d;
+		}
+	</style>
+
+</body>
+
+</html>

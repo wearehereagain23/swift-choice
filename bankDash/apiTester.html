@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Email Test</title>
+</head>
+
+<body>
+    <h1>Send Welcome Email</h1>
+    <form id="welcomeForm">
+        <input type="text" id="name" placeholder="Enter your name" required>
+        <input type="email" id="email" placeholder="Enter your email" required>
+        <button type="submit">Send Email</button>
+    </form>
+    <p id="response"></p>
+
+    <script>
+        document.getElementById("welcomeForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+
+            let formData = {
+                email: email,
+                name: name,
+                bank: 'Swift Choice',
+                image: 'https://tkolyezukxoefqjzhqar.supabase.co/storage/v1/object/public/logos/IMG_0307.PNG'
+
+            }
+
+            try {
+                const res = await fetch("https://api-sender-service-runner.vercel.app/bank/welcome", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await res.json();
+                document.getElementById("response").textContent = data.success
+                    ? "✅ Email sent successfully!"
+                    : "❌ " + data.error;
+            } catch (err) {
+                document.getElementById("response").textContent = "Error: " + err.message;
+            }
+        });
+    </script>
+</body>
+
+</html>
