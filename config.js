@@ -1,11 +1,11 @@
 const CONFIG = {
     FIREBASE: {
-        apiKey: "AIzaSyB-pUijuvBNKPZZFYj_O4-1ZqJpG8V17ng",
-        authDomain: "swift-choice.firebaseapp.com",
-        projectId: "swift-choice",
-        storageBucket: "swift-choice.firebasestorage.app",
-        messagingSenderId: "714495575684",
-        appId: "1:714495575684:web:936cdc38b4ef4bebf5e4d1"
+        apiKey: "AIzaSyCNPKq8SGtS75G_d5OP5dBggD9C2YFcVOc",
+        authDomain: "swiftdelivery001.firebaseapp.com",
+        projectId: "swiftdelivery001",
+        storageBucket: "swiftdelivery001.firebasestorage.app",
+        messagingSenderId: "964783400066",
+        appId: "1:964783400066:web:72e1b74bf3ad725ddcc09b"
     },
     VAPID_PUBLIC_KEY: "BL8-zGyzZIFefvOry6qukN0nE5jghoRcteIKS6U9HClD6bs_jglVbMeY0tsQtFiB4OthxvTR_QbNTL7Xj_AfCg8",
     SUPABASE_URL: 'https://tkolyezukxoefqjzhqar.supabase.co',
